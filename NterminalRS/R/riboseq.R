@@ -4,7 +4,7 @@
 #' @param selected \code{GRanges} object containing genomic features selected by selectFeaturesGR function
 #' @param riboseq \code{GRanges} object (for example riboseqlist["forward"]) containing RiboSeq coverage data
 #' @param str character: +/-/* indicating forward, reverse or both DNA strands; required in case RiboSeq data
-#' is frame agnostic
+#' is strand agnostic
 #' @import data.table
 #'
 #' @return Data frame with all obervations
@@ -39,8 +39,7 @@ overlapsRiboSeq <- function (selected, riboseq, str) {
 #' @export aggregateRiboSeq
 aggregateRiboSeq <- function(x, genome, str) {
   x <- subset(x, start > 0 & i.score > 0)
-  names <- unique(x$ID)
-
+  x.names <- unique(x$ID)
   len_parts <- max(x$width)
 
   out <- as.data.frame(matrix(NA, ncol = len_parts * 2 + 4, nrow = 0))
@@ -55,44 +54,44 @@ aggregateRiboSeq <- function(x, genome, str) {
     )
 
 
-  for (name in names) {
-    riboseq_name <- vector(mode = "numeric")
-    tmp_df <- subset(x, ID == name)
-    if (!is.numeric(tmp_df[1, ]$start) |
-        !is.numeric(tmp_df[1, ]$end)) {
-      stop(paste(tmp_df[1, ]$start, tmp_df[1, ]$start, " -- "))
+  for (name in x.names) {
+    riboseq.name <- vector(mode = "numeric")
+    tmp.df <- subset(x, ID == name)
+    if (!is.numeric(tmp.df[1, ]$start) |
+        !is.numeric(tmp.df[1, ]$end)) {
+      stop(paste(tmp,df[1, ]$start, tmp.df[1, ]$start, " -- "))
     }
 
     sequence <-
       as.character(getSeq(genome, GRanges(
-        tmp_df[1, ]$seqnames,
-        IRanges(start = tmp_df[1, ]$start, end = tmp_df[1, ]$end)
+        tmp.df[1, ]$seqnames,
+        IRanges(start = tmp.df[1, ]$start, end = tmp.df[1, ]$end)
       )))
 
 
-    for (i in  tmp_df[1, ]$start:tmp_df[1, ]$end) {
-      score <- tmp_df[tmp_df$i.start <= i & tmp_df$i.end >= i]$i.score
+    for (i in tmp.df[1, ]$start:tmp.df[1, ]$end) {
+      score <- tmp.df[tmp.df$i.start <= i & tmp.df$i.end >= i]$i.score
       if (length(score) == 0) {
         score = 0
       }
-      riboseq_name <- c(riboseq_name, score)
+      riboseq.name <- c(riboseq.name, score)
     }
 
     if (str == "-") {
       sequence <- as.character(reverseComplement(DNAString(sequence)))
-      riboseq_name <- rev(riboseq_name)
+      riboseq.name <- rev(riboseq.name)
     }
 
 
-    seq_v <- as.vector(strsplit(sequence, ""))
+    seq.v <- as.vector(strsplit(sequence, ""))
     out[nrow(out) + 1, ] <-
       unlist(c(
-        tmp_df[1, ]$ID,
-        tmp_df[1, ]$start,
-        tmp_df[1, ]$end,
+        tmp.df[1, ]$ID,
+        tmp.df[1, ]$start,
+        tmp.df[1, ]$end,
         as.character(tmp_df[1, ]$seqnames),
-        riboseq_name,
-        seq_v
+        riboseq.name,
+        seq.v
       ))
 
   }

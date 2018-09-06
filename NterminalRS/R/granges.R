@@ -23,7 +23,6 @@ selectFeaturesGR <-
 
     if (type == "start" | type == "end") {
       out <- resize(out, fix = type, width = width)
-
     }
 
     if (type == "random") {
@@ -46,16 +45,16 @@ selectFeaturesGR <-
 #' @import BSgenome
 #' @import GenomicRanges
 #'
-#' @return GenomicRange object containing randomly selected uniquue ranges of widths requested by vector \code{x}
+#' @return GenomicRange object containing randomly selected uniquue ranges of widths
+#' requested by vector \code{x}
 #' @export randomGenomicRanges
 randomGenomicRanges <- function(x, gr) {
+  stopifnot(is.vector(x)) # check if x isn't by chance a list
   n <- length(x)
   names <- as.vector(seqnames(gr))
   available_ranges <-
     unlist(mapply(seq, from = start(gr), to = end(gr)))
   out <-
-    GRanges(sample(names, n, replace = TRUE), IRanges(sample(available_ranges, n), width =
-                                                        x))
+    GRanges(sample(names, n, replace = TRUE), IRanges(sample(available_ranges, n), width =                                                        x))
   return(out)
-
 }

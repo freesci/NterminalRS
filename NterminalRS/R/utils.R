@@ -34,8 +34,8 @@ verifySeqLevels <- function(riboseqlist, gr) {
   if (!((seqlevels(riboseqlist["forward"]) == seqlevels(riboseq["reverse"])) &&
         (seqlevels(riboseqlist["reverse"]) == seqlevels(x)))) {
     print("Please correct seqlevels in your Granges objects.")
-    return(FALSE)
+    FALSE
   } else {
-    return(TRUE)
+    TRUE
   }
 }
