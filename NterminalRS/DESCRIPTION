@@ -13,8 +13,11 @@ Imports:
   rtracklayer,
   GenomicRanges,
   data.table,
-  Biostrings
+  Biostrings,
+  BSgenome
 Suggests: knitr,
-    rmarkdown,
-    ggplot2,
-    testthat
+  rmarkdown,
+  ggplot2,
+  testthat,
+  BSgenome.Ecoli.Ensembl.ASM584v2
+
