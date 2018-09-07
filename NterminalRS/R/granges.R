@@ -18,7 +18,6 @@ selectFeaturesGR <-
             feature = "gene",
             randomranges = NULL) {
 
-    stopifnot(verifySeqLevels(gr))
     out <- gr[which(elementMetadata(gr)$type == feature)]
 
     if (type == "start" | type == "end") {

@@ -11,8 +11,8 @@ loadGWIPSdata <- function(forward, reverse) {
   stopifnot(file.exists(forward))
   stopifnot(file.exists(reverse))
   riboseqlist <- list()
-  riboseqlist["forward"] <<- rtracklayer::import(con = forward, format = "bigWig")
-  riboseqlist["reverse"] <<- rtracklayer::import(con = reverse, format = "bigWig")
+  riboseqlist["forward"] <- rtracklayer::import(con = forward, format = "bigWig")
+  riboseqlist["reverse"] <- rtracklayer::import(con = reverse, format = "bigWig")
   riboseqlist
 }
 

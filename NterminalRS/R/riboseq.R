@@ -89,7 +89,7 @@ aggregateRiboSeq <- function(x, genome, str) {
         tmp.df[1, ]$ID,
         tmp.df[1, ]$start,
         tmp.df[1, ]$end,
-        as.character(tmp_df[1, ]$seqnames),
+        as.character(tmp.df[1, ]$seqnames),
         riboseq.name,
         seq.v
       ))
