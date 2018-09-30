@@ -8,43 +8,62 @@
 #
 
 library(shiny)
-
+library(shinydashboard)
+library(shinydashboardPlus)
+library(NterminalRS)
 # Define UI for application that draws a histogram
-ui <- fluidPage(
-   
-   # Application title
-   titlePanel("Old Faithful Geyser Data"),
-   
-   # Sidebar with a slider input for number of bins 
-   sidebarLayout(
-      sidebarPanel(
-         sliderInput("bins",
-                     "Number of bins:",
-                     min = 1,
-                     max = 50,
-                     value = 30)
-      ),
-      
-      # Show a plot of the generated distribution
-      mainPanel(
-         plotOutput("distPlot")
+ui <- dashboardPagePlus(title = "N-terminal analysis of translation dynamics",
+  dashboardHeaderPlus(),
+  dashboardSidebar(
+    textInput("pattern",
+                "Input pattern here")
+  ),
+  dashboardBody(
+    setShadow("box"),
+    fluidRow(
+      boxPlus(title = "Quick how-to", status = "info", width = 12,
+              solidHeader = TRUE,
+              HTML("Input aminoacid pattern on the left. It is searched from the beginning of the gene. It uses Perl-compatible
+                    regular expressions. You can use for example [A-Z] to indicate any aminoacid or [A,I,L] to require one of those three
+                   (alanine, isoleucine and leucine)."), collapsible = TRUE, closable = FALSE),
+      boxPlus(
+        title = "Main plot with dropdown",
+        status = "warning",
+        solidHeader = FALSE,
+        closable = FALSE,
+        collapsible = TRUE,
+        width = 12,
+        plotOutput("distPlot"),
+        textOutput("dataSummary")
       )
-   )
+    )
+  )
 )
+
+
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-   
+  input.data <- readRDS(system.file("cached.data",
+                          package = "NterminalRS"))
+
+
+  data.for.plot <- reactive({
+    message("pattern added")
+    dataExtract(input.data, input$pattern)
+  })
+
    output$distPlot <- renderPlot({
-      # generate bins based on input$bins from ui.R
-      x    <- faithful[, 2] 
-      bins <- seq(min(x), max(x), length.out = input$bins + 1)
-      
-      # draw the histogram with the specified number of bins
-      hist(x, breaks = bins, col = 'darkgray', border = 'white')
+     message("Plot rendering")
+     pattern_plot(data.for.plot(), isolate(input$pattern))
+   })
+
+   output$dataSummary <- renderText({
+     summary.data <- dataSummary(data.for.plot())
+     paste0("Number of valid observations: ", summary.data$observations, ", across ", summary.data$genes, " genes." )
    })
 }
 
-# Run the application 
+# Run the application
 shinyApp(ui = ui, server = server)
 

@@ -39,3 +39,70 @@ verifySeqLevels <- function(riboseqlist, gr) {
     TRUE
   }
 }
+
+
+#' pattern plot
+#' @param data data for plot
+#' @param pattern pattern (conforms to PERL style)
+#'
+#' @export
+#' @return ggplot object
+pattern_plot <- function(data, pattern){
+  ggplot(data, aes(x=variable, y=riboseq, group=variable)) + geom_boxplot(notch = TRUE, outlier.shape = NA) +
+    labs(title=paste("Elongating ribosome occupupancy at first 15 positions of E. coli genes for pattern", pattern)) + scale_y_log10() +
+    ylab("Occupancy") + xlab("Position, from 1st to 15th") + theme_light()
+}
+
+
+#' get data summary
+#' @param mydf data to extract
+#' @param pattern pattern to choose from
+#'
+#' @export
+dataExtract <- function(mydf, pattern){
+
+  if (is.null(pattern)){
+    pattern <- "M"
+  }
+
+  tmp.df <- mydf[[4]][which(mydf[[4]]$ID == "gene:b3652"), ]
+  for (i in seq_along(mydf)) {
+    tmp.df <-
+      rbind(tmp.df, mydf[[i]][grep(paste0("^", pattern), mydf[[i]][36]$V36, perl = TRUE),])
+  }
+  data4plot <- melt(
+    tmp.df,
+    id.vars = c("ID"),
+    measure.vars = c(
+      "RS1",
+      "RS2",
+      "RS3",
+      "RS4",
+      "RS5",
+      "RS6",
+      "RS7",
+      "RS8",
+      "RS9",
+      "RS10",
+      "RS11",
+      "RS12",
+      "RS13",
+      "RS14",
+      "RS15"
+    ),
+    value.name = "riboseq"
+  )
+  data4plot$riboseq[which(data4plot$riboseq == 0)] <- NA
+  data4plot$riboseq <- as.numeric(data4plot$riboseq)
+  data4plot
+}
+
+#' data summary
+#' @param data.for.plot
+#'
+#' @export
+dataSummary <- function(data.for.plot){
+  no.genes <- length(unique(data.for.plot$ID))
+  no.observations <- length(data.for.plot$riboseq[!is.na(data.for.plot$riboseq)])
+  list(genes = no.genes, observations = no.observations)
+}
