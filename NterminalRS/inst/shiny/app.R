@@ -11,6 +11,8 @@ library(shiny)
 library(shinydashboard)
 library(shinydashboardPlus)
 library(NterminalRS)
+library(ggplot2)
+
 # Define UI for application that draws a histogram
 ui <- dashboardPagePlus(title = "N-terminal analysis of translation dynamics",
   dashboardHeaderPlus(),
